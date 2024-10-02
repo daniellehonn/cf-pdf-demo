@@ -25,10 +25,23 @@ PRICING = {
 
 GROQ_LLAMA_MODEL_FULLNAME="llama-3.1-70b-versatile"
 
-SYSTEM_MESSAGE = """Your task is to answer user questions based on the information given above each question. Only ever use the information given, DO NOT FIND YOUR OWN INFORMATION. Say "I don't know" if the information is missing and be as detailed as possible. End each sentence with a period. Please begin."""
+SYSTEM_MESSAGE = """
+Your task is to answer user questions based on the context given above each question. 
+The information is given in the following structure: 
+[CONTEXT]:
+    [Source #1]
+    Name: source_name
+    Source: source
+    Content: ...
+    ...
+Only ever use the information given, DO NOT FIND YOUR OWN INFORMATION. 
+Make sure to always cite the source after it is referenced. 
+When citing a source, use the following format: [Source #1] to pinpoint the source being cited for that portion of the response
+Say "I don't know" if the information is missing and be as detailed as possible. 
+"""
 
 USER_MESSAGE = """
-    Information: {context}
-
-    User Question: {query}
+    Answer the QUESTION using information only from
+    [CONTEXT]: {context}
+    [QUESTION]: {query}
 """

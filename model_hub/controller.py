@@ -28,7 +28,7 @@ def trim_to_token_limit(text, model, max_tokens=120000):
     return text
 
 
-def ask_pdf(data, selected_model):
+def ask_llm(data, selected_model):
     token_counts = {}
     
     if selected_model in ["gpt-4o-mini", "gpt-4o-2024-08-06"]:
@@ -54,23 +54,6 @@ def ask_pdf(data, selected_model):
         completion = model.generate_content(prompt)
 
         return completion.text
-    
-    # elif selected_model == "Llama3.1 8B":
-    #     # Point to the local server
-    #     payload = {
-    #         "model": 'llama3.1',
-    #         "messages": [
-    #             {"role": "system", "content": SYSTEM_MESSAGE},
-    #             {"role": "user", "content": USER_MESSAGE.format(context=data["context"], query=data["query"])}
-    #         ],
-    #         "temperature": 0.7
-    #     }
-    #     response = requests.post('http://localhost:11434/api/chat', json=payload)
-    #     completion = response.json()
-
-    #     # Extract the content from the response
-    #     response_content = completion
-    #     return response_content
     
     elif selected_model== "Groq Llama3.1 70b":
         api_key = os.getenv("GROQ_API_KEY")        
