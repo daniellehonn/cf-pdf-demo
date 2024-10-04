@@ -1,7 +1,7 @@
 import streamlit as st
 from model_hub.config import PRICING
 from model_hub.controller import ask_llm
-from utils.vectorization import vector_similarity_search
+from utils.vectorization import vector_similarity_search, pinecone_remove_all
 from utils.navigation import make_sidebar
 
 # Function to generate response using LLM based on context
@@ -40,8 +40,15 @@ if st.button("Ask", type="primary"):
         response = generate_llm_response(context, query, selected_model=model_selection)
         with st.chat_message("assistant"):
             st.write(f"{response}")
+            st.markdown("---")
             for source in sources:
                 st.write(source)
+    
+
+st.markdown("---")
+st.write("Powered by [ContextForce](https://contextforce.com/)")
+if st.button("Delete All Vectors"):
+    pinecone_remove_all()
 
 
 

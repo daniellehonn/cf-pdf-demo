@@ -1,6 +1,8 @@
 import streamlit as st
+import time
 from utils.navigation import make_sidebar
 from utils.vectorization import index_pdf, index_youtube, index_webpage
+from utils.r2_upload import upload_file_to_r2
 from io import BytesIO
 
 st.title("Upload Data...")
@@ -9,9 +11,14 @@ uploaded_pdf = st.file_uploader("Upload PDF File", type=['pdf'])
 if uploaded_pdf:
     if st.button("Extract PDF"):
         with st.spinner('Please wait... PDF data is being extracted.'):
-            pdf_file = BytesIO(uploaded_pdf.read())
-            index_pdf(pdf_file, uploaded_pdf.name)
+            pdf_data = uploaded_pdf.read()
+            upload_file_to_r2(BytesIO(pdf_data), uploaded_pdf.name)
+            
+            index_pdf(BytesIO(pdf_data), uploaded_pdf.name)
             st.success(f"PDF {uploaded_pdf.name} extracted successfully.")
+            time.sleep(5)
+            st.rerun()
+
 
 st.markdown("---")
 
@@ -21,6 +28,8 @@ if youtube_url:
         with st.spinner('Please wait... transcript is being extracted.'):
             index_youtube(youtube_url)
             st.success(f"Transcript extracted successfully.")
+            time.sleep(5)
+            st.rerun()
 
 st.markdown("---")
 
@@ -30,3 +39,5 @@ if page_url:
         with st.spinner('Please wait... webpage is being extracted.'):
             index_webpage(page_url)
             st.success(f"Webpage extracted successfully.")
+            time.sleep(5)
+            st.rerun()
