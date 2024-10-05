@@ -39,7 +39,7 @@ if page_url:
     if st.button("Extract Page"):
         with st.spinner('Please wait... webpage is being extracted.'):
             index_webpage(page_url)
-            
+
         st.success(f"Webpage extracted successfully.")
         time.sleep(2)
         st.rerun()

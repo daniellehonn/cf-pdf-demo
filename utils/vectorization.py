@@ -69,7 +69,7 @@ def get_and_store_embeddings(docs, source_type, source, source_name=None):
     splits = text_splitter.split_documents(docs)
     for id, text in enumerate(splits):
         if source_type == "youtube":
-            splits[id].metadata['source'] = f'{source}t={splits[id].metadata['start_seconds']}s'
+            splits[id].metadata['source'] = f'{source}?t={splits[id].metadata['start_seconds']}s'
             source_name = splits[id].metadata['title']
             md_file = source
         else:
