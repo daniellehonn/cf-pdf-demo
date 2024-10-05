@@ -35,7 +35,6 @@ def index_pdf(pdf_file, pdf_name):
     upload_md_to_r2(markdown_text, pdf_name.replace('.pdf', ''))
     docs = md_to_docs(markdown_text)
     get_and_store_embeddings(docs, "pdf", f"https://r2.contextforce.com/{pdf_name}", pdf_name.replace('.pdf', ''))
-    # add_source(pdf_name)
     return None
 
 # Function to index Youtube video transcripts
@@ -44,7 +43,6 @@ def index_youtube(youtube_url):
     # Load Youtube video transcript
     docs = youtube_to_docs(youtube_url)
     get_and_store_embeddings(docs, "youtube", youtube_url)
-    # add_source(youtube_url)
     return None
 
 # Function to index Webpage
@@ -60,6 +58,7 @@ def index_webpage(page_url):
 
 # Function to get MD chunks and store them to Pinecone
 def get_and_store_embeddings(docs, source_type, source, source_name=None):
+    print("get_and_store_embeddings")
     chunk_size = 1000
     chunk_overlap = 200
     text_splitter = RecursiveCharacterTextSplitter(
@@ -68,7 +67,6 @@ def get_and_store_embeddings(docs, source_type, source, source_name=None):
 
     # Split
     splits = text_splitter.split_documents(docs)
-
     for id, text in enumerate(splits):
         if source_type == "youtube":
             splits[id].metadata['source'] = f'{source}t={splits[id].metadata['start_seconds']}s'
@@ -87,7 +85,15 @@ def get_and_store_embeddings(docs, source_type, source, source_name=None):
     vectorstore.add_documents(
         documents=splits
     )
+
+    md_file = ""
+    if source_type == "youtube":
+        md_file = source
+    else:
+        md_file = f"https://r2.contextforce.com/{urllib.parse.quote(source_name.replace(' ', '_'), safe="_-.")}.md"
+
     add_source(source_name, source_type, source, md_file, len(splits))
+    print(f"Successfully indexed {len(splits)} chunks from {source_name} and stored to D1/Pinecone")
 
     return None
 

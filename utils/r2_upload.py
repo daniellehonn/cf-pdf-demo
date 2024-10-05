@@ -34,6 +34,7 @@ def upload_file_to_r2(file_data, file_name):
         print(f'An error occurred: {e}')
 
 def upload_md_to_r2(md_text, file_name):
+    print("upload_md_to_r2")
     markdown_file = io.BytesIO(md_text.encode('utf-8'))  # Convert string to bytes
     # Step 2: Upload the file to R2
     upload_file_to_r2(markdown_file, f'{file_name.replace(' ', '_')}.md')

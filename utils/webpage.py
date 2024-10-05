@@ -6,6 +6,7 @@ from langchain_text_splitters import MarkdownHeaderTextSplitter
 
 # Function to convert PDF to Markdown using ContextForce
 def convert_webpage_to_md(page_url):
+    print("convert_webpage_to_md")
     response = requests.get(f'https://r.contextforce.com/{page_url}')
     if response.status_code == 200:
         response_text = response.text

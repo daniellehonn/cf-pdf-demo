@@ -13,11 +13,11 @@ if uploaded_pdf:
         with st.spinner('Please wait... PDF data is being extracted.'):
             pdf_data = uploaded_pdf.read()
             upload_file_to_r2(BytesIO(pdf_data), uploaded_pdf.name)
-            
             index_pdf(BytesIO(pdf_data), uploaded_pdf.name)
-            st.success(f"PDF {uploaded_pdf.name} extracted successfully.")
-            time.sleep(5)
-            st.rerun()
+
+        st.success(f"PDF {uploaded_pdf.name} extracted successfully.")
+        time.sleep(2)
+        st.rerun()
 
 
 st.markdown("---")
@@ -27,9 +27,10 @@ if youtube_url:
     if st.button("Extract Transcript"):
         with st.spinner('Please wait... transcript is being extracted.'):
             index_youtube(youtube_url)
-            st.success(f"Transcript extracted successfully.")
-            time.sleep(5)
-            st.rerun()
+            
+        st.success(f"Transcript extracted successfully.")
+        time.sleep(2)
+        st.rerun()
 
 st.markdown("---")
 
@@ -38,6 +39,7 @@ if page_url:
     if st.button("Extract Page"):
         with st.spinner('Please wait... webpage is being extracted.'):
             index_webpage(page_url)
-            st.success(f"Webpage extracted successfully.")
-            time.sleep(5)
-            st.rerun()
+            
+        st.success(f"Webpage extracted successfully.")
+        time.sleep(2)
+        st.rerun()
