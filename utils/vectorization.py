@@ -1,4 +1,5 @@
 # from pages.sources import add_source
+from io import BytesIO
 from pinecone import Pinecone
 from dotenv import load_dotenv
 import os
@@ -10,7 +11,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from utils.pdf import convert_pdf_to_md, md_to_docs
 from utils.webpage import convert_webpage_to_md
 from utils.youtube import youtube_to_docs
-from utils.r2_upload import upload_file_to_r2, upload_md_to_r2
+from utils.r2_upload import upload_text_to_r2
 from utils.d1 import add_source
 
 
@@ -29,10 +30,10 @@ vectorstore = PineconeVectorStore(index, embeddings)
 
 
 # Function to index PDFs
-def index_pdf(pdf_file, pdf_name):
+def index_pdf(pdf_data, pdf_name):
     # Load PDF
-    markdown_text = convert_pdf_to_md(pdf_file)
-    upload_md_to_r2(markdown_text, pdf_name.replace('.pdf', ''))
+    markdown_text = convert_pdf_to_md(BytesIO(pdf_data))
+    upload_text_to_r2(markdown_text, "md", pdf_name.replace('.pdf', ''))
     docs = md_to_docs(markdown_text)
     get_and_store_embeddings(docs, "pdf", f"https://r2.contextforce.com/{pdf_name}", pdf_name.replace('.pdf', ''))
     return None
@@ -49,7 +50,7 @@ def index_youtube(youtube_url):
 def index_webpage(page_url):
     # Load Webpage
     markdown_text, title = convert_webpage_to_md(page_url)
-    upload_md_to_r2(markdown_text, title)
+    upload_text_to_r2(markdown_text, "md", title)
     docs = md_to_docs(markdown_text)
     get_and_store_embeddings(docs, "webpage", page_url, title)
     return None
@@ -73,11 +74,11 @@ def get_and_store_embeddings(docs, source_type, source, source_name=None):
             source_name = splits[id].metadata['title']
             md_file = source
         else:
+            md_file = f"https://r2.contextforce.com/{urllib.parse.quote(source_name.replace(' ', '_'), safe="_-.")}.md"
             if source_type == "pdf":
-                splits[id].metadata['source'] = f'{source}'
+                splits[id].metadata['source'] = f'{md_file}#:~:text={urlEncode(splits[id].page_content)}'
             elif source_type == "webpage":
                 splits[id].metadata['source'] = f'{source}#:~:text={urlEncode(splits[id].page_content)}'
-            md_file = f"https://r2.contextforce.com/{urllib.parse.quote(source_name.replace(' ', '_'), safe="_-.")}.md"
 
         splits[id].metadata['source_name'] = source_name
     
@@ -87,21 +88,29 @@ def get_and_store_embeddings(docs, source_type, source, source_name=None):
     )
 
     md_file = ""
+    thumbnail_url = ""
     if source_type == "youtube":
         md_file = source
+        thumbnail_url = splits[0].metadata['thumbnail_url']
     else:
         md_file = f"https://r2.contextforce.com/{urllib.parse.quote(source_name.replace(' ', '_'), safe="_-.")}.md"
-
-    add_source(source_name, source_type, source, md_file, len(splits))
+    print('thumnail_url: ', thumbnail_url)
+    add_source(source_name, source_type, source, md_file, len(splits), thumbnail_url)
     print(f"Successfully indexed {len(splits)} chunks from {source_name} and stored to D1/Pinecone")
 
     return None
 
 def urlEncode(text):
-    words = text.split()  
-    first_5_words = words[:5]  
-    last_5_words = words[-5:]
-    return f'{'%20'.join(first_5_words)},{'%20'.join(last_5_words)}'
+    words = text.strip().split()  
+    if len(words) > 10:
+        first_five_words = urllib.parse.quote(' '.join(words[:5]))
+        last_five_words = urllib.parse.quote(' '.join(words[-5:]))
+        encoded_text = f"{first_five_words},{last_five_words}"
+    else:
+        encoded_text = urllib.parse.quote(text)
+
+
+    return encoded_text.replace('-', '%2D')
 
 # Function to search Pinecone for relevant embeddings
 def vector_similarity_search(query):
@@ -109,13 +118,13 @@ def vector_similarity_search(query):
     return result
 
 
-def pinecone_remove_source(source):
+def pinecone_remove_source(source_name):
     # Query the index for documents that match the metadata
     # Create an empty query vector of 768 dimensions
     empty_query_vector = [0.0] * 768  # List of zeros
     query_results = index.query(  # Adjust the parameters as needed
         vector = empty_query_vector,
-        filter={'source': source},
+        filter={'source_name': source_name},
         top_k=1000
     )
 

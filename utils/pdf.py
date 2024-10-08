@@ -6,20 +6,21 @@ from langchain_text_splitters import MarkdownHeaderTextSplitter
 
 # Function to convert PDF to Markdown using ContextForce
 def convert_pdf_to_md(pdf_file):
-    response = requests.post('https://r.contextforce.com/', files = {'file': ('uploaded_file.pdf', pdf_file, 'application/pdf')}, headers={'CF-Result-Format': 'markdown', 'CF-Mode': 'auto', 'CF-Model': 'gpt-4o-mini', 'CF-OpenAI-Api-Key': os.getenv("OPENAI_API_KEY")})
+    # response = requests.post('https://r.contextforce.com/', files = {'file': ('uploaded_file.pdf', pdf_file, 'application/pdf')}, headers={'Accept': 'application/json', 'CF-Mode': 'auto', 'CF-Model': 'gpt-4o-mini', 'CF-OpenAI-Api-Key': os.getenv("OPENAI_API_KEY")})
+    response = requests.post('https://r.contextforce.com/', files = {'file': ('uploaded_file.pdf', pdf_file, 'application/pdf')}, headers={'Accept': 'application/json'})
     if response.status_code == 200:
         print(response.text)
-        response_text = response.text
-        # Step 1: Find the index of [MARKDOWN CONTENT]
-        markdown_start = response_text.find("[MARKDOWN CONTENT]") + len("[MARKDOWN CONTENT]")
-        # Step 2: Find the index of [OUTBOUND LINKS]
-        outbound_links_start = response_text.find("[OUTBOUND LINKS]")
-        # Step 3: Extract the substring between these two indices
-        markdown_text = response_text[markdown_start:outbound_links_start]
-        # Step 4: Trim any leading or trailing whitespace
-        markdown_text = markdown_text.strip()
-        # markdown_text = response.text.split('"markdown": "')[1].split('", "')[0]
-        return markdown_text
+        return response.json()['markdown']
+    else:
+        st.error("Error converting PDF to Markdown")
+        print(response.text)
+        return None
+
+def convert_pdf_to_html(pdf_file):
+    response = requests.post('https://r.contextforce.com/', files = {'file': ('uploaded_file.pdf', pdf_file, 'application/pdf')}, headers={'Accept': 'text/html'})
+    if response.status_code == 200:
+        print(response.text)
+        return response.text
     else:
         st.error("Error converting PDF to Markdown")
         print(response.text)

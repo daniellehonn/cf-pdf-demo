@@ -5,7 +5,7 @@ from openai import OpenAI
 import google.generativeai as genai
 from groq import Groq
 
-from model_hub.config import PRICING, SYSTEM_MESSAGE, USER_MESSAGE, GROQ_LLAMA_MODEL_FULLNAME
+from model_hub.config import PRICING, USER_MESSAGE, GROQ_LLAMA_MODEL_FULLNAME
 
 def calculate_price(token_counts, model):
     input_token_count = token_counts.get("input_tokens", 0)
@@ -37,12 +37,12 @@ def ask_llm(data, selected_model):
         response = client.chat.completions.create(
             model=selected_model,
             messages=[
-                {"role": "system", "content": SYSTEM_MESSAGE},
                 {"role": "user", "content": USER_MESSAGE.format(context=data["context"], query=data["query"])},
             ],
-            stream=False
+            stream=True
         )
-        return response.choices[0].message.content
+        print(USER_MESSAGE.format(context=data["context"], query=data["query"]))
+        return response
 
     elif selected_model == "gemini-1.5-flash":
         # Use Google Gemini API
@@ -50,7 +50,7 @@ def ask_llm(data, selected_model):
         api_key = os.getenv("GOOGLE_API_KEY")
                 
         model = genai.GenerativeModel('gemini-1.5-flash')
-        prompt = SYSTEM_MESSAGE + "\n" + USER_MESSAGE.format(context=data["context"], query=data["query"])
+        prompt = USER_MESSAGE.format(context=data["context"], query=data["query"])
         completion = model.generate_content(prompt)
 
         return completion.text
@@ -63,7 +63,6 @@ def ask_llm(data, selected_model):
 
         completion = client.chat.completions.create(
             messages=[
-                {"role": "system","content": SYSTEM_MESSAGE},
                 {"role": "user","content": USER_MESSAGE.format(context=data["context"], query=data["query"])}
             ],
             model=GROQ_LLAMA_MODEL_FULLNAME,

@@ -28,9 +28,7 @@ if st.button("Ask", type="primary"):
             context += f"Source: {res.metadata.get('source')}\n"  # Using 'source' as URL or pdf name
             context += f"Content #{idx}:\n"
             context += f"{res.page_content}\n"
-            sources += (f"[SOURCE #{idx}]: [{res.metadata.get('source_name')}]({res.metadata.get('source')})  \n")
-
-        print(context, sources)
+            sources += (f"[{idx}]: [{res.metadata.get('source_name')}]({res.metadata.get('source')})  \n")
     
     # Generate response using LLM based on the context
     with st.chat_message("user"):
@@ -38,15 +36,13 @@ if st.button("Ask", type="primary"):
     with st.spinner("Generating response using LLM..."):
         response = generate_llm_response(context, query, selected_model=model_selection)
         with st.chat_message("assistant"):
-            st.write(f"{response}")
+            st.write_stream(response)
             st.markdown(f"**Context Sources**  \n{sources}")
 
     
 
 st.markdown("---")
 st.write("Powered by [ContextForce](https://contextforce.com/)")
-if st.button("Delete All Vectors"):
-    pinecone_remove_all()
 
 
 

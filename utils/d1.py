@@ -4,17 +4,18 @@ BASE_URL = "https://d1-tutorial.rayhon1014.workers.dev/api/sources"
 
 def get_sources():
     response = requests.get(BASE_URL)
-    json = response.json()
-    print(json)
-    return json
+    response_json = response.json()
 
-def add_source(name, type, source, md_file, num_vectors):
+    return response_json
+
+def add_source(name, type, source, md_file, num_vectors, thumbnail_url):
     body = {
         "Name": name,
         "Type": type,
         "Source": source,
         "MD_File": md_file,
-        "Num_Vectors": num_vectors
+        "Num_Vectors": num_vectors,
+        "Thumbnail_Url": thumbnail_url
     }
     response = requests.post(BASE_URL, json=body)
     return response.json()
