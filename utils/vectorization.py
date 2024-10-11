@@ -90,11 +90,12 @@ def get_and_store_embeddings(docs, source_type, source, source_name=None):
     md_file = ""
     thumbnail_url = ""
     if source_type == "youtube":
+        print('source and # vectors: ', source, len(splits))
         md_file = source
         thumbnail_url = splits[0].metadata['thumbnail_url']
     else:
         md_file = f"https://r2.contextforce.com/{urllib.parse.quote(source_name.replace(' ', '_'), safe="_-.")}.md"
-    print('thumnail_url: ', thumbnail_url)
+    print('thumbnail_url: ', thumbnail_url)
     add_source(source_name, source_type, source, md_file, len(splits), thumbnail_url)
     print(f"Successfully indexed {len(splits)} chunks from {source_name} and stored to D1/Pinecone")
 
