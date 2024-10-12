@@ -12,10 +12,6 @@ PRICING = {
         "input": 0.075 / 1_000_000,  # $0.075 per 1M input tokens
         "output": 0.30 / 1_000_000, # $0.30 per 1M output tokens
     },
-    # "Llama3.1 8B": {
-    #     "input": 0 ,  # Free
-    #     "output": 0 , # Free
-    # },
     "Groq Llama3.1 70b": {
         "input": 0 ,  # Free
         "output": 0 , # Free

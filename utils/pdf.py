@@ -6,8 +6,16 @@ from langchain_text_splitters import MarkdownHeaderTextSplitter
 
 # Function to convert PDF to Markdown using ContextForce
 def convert_pdf_to_md(pdf_file):
-    # response = requests.post('https://r.contextforce.com/', files = {'file': ('uploaded_file.pdf', pdf_file, 'application/pdf')}, headers={'Accept': 'application/json', 'CF-Mode': 'auto', 'CF-Model': 'gpt-4o-mini', 'CF-OpenAI-Api-Key': os.getenv("OPENAI_API_KEY")})
-    response = requests.post('https://r.contextforce.com/', files = {'file': ('uploaded_file.pdf', pdf_file, 'application/pdf')}, headers={'Accept': 'application/json'})
+    print("convert_pdf_to_md")
+    headers = {
+        'CF-Mode': 'auto', 
+        'Accept': 'application/json', 
+        'CF-Model': 'gpt-4o-mini', 
+        'CF-OpenAI-Api-Key': os.getenv('OPENAI_API_KEY')
+    }
+    print(headers)
+    files = {'file': ('uploaded_file.pdf', pdf_file, 'application/pdf')}
+    response = requests.post('https://r.contextforce.com/', files = files, headers=headers)
     if response.status_code == 200:
         print(response.text)
         return response.json()['markdown']

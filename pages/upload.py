@@ -20,7 +20,6 @@ if uploaded_pdf:
         time.sleep(2)
         st.rerun()
 
-
 st.markdown("---")
 
 youtube_url = st.text_input("Extract from Youtube Video")
