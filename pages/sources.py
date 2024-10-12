@@ -13,7 +13,7 @@ make_sidebar()
 svg_map = {
     "pdf": "https://www.svgrepo.com/show/484113/pdf-file.svg",
     "youtube": "https://www.svgrepo.com/show/13671/youtube.svg",
-    "webpage": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcT3z6OLss2pupQutUN28SqSx2KvP8Uq-HNWMZly_AxxcuZf6TPk",
+    "webpage": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcT3z6OLss2pupQutUN28SqSx2KvP8Uq-HNWMZly_AxxcuZf6TPk"
 }
 
 sources = get_sources()

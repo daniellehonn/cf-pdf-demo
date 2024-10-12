@@ -95,6 +95,11 @@ def get_and_store_embeddings(docs, source_type, source, source_name=None):
         thumbnail_url = splits[0].metadata['thumbnail_url']
     else:
         md_file = f"https://r2.contextforce.com/{urllib.parse.quote(source_name.replace(' ', '_'), safe="_-.")}.md"
+        if source_type == "pdf":
+            thumbnail_url = "https://www.svgrepo.com/show/484113/pdf-file.svg"
+        else:
+            thumbnail_url = "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcT3z6OLss2pupQutUN28SqSx2KvP8Uq-HNWMZly_AxxcuZf6TPk"
+            
     print('thumbnail_url: ', thumbnail_url)
     add_source(source_name, source_type, source, md_file, len(splits), thumbnail_url)
     print(f"Successfully indexed {len(splits)} chunks from {source_name} and stored to D1/Pinecone")
